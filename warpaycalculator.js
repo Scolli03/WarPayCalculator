@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.0
+// @version      3.1
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
@@ -10,10 +10,12 @@
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
 // @grant        none
-// @run-at       document-end
+// @run-at       document-idle
 // ==/UserScript==
 /* global $, waitForKeyElements */
-(function() {
+
+waitForKeyElements('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root div div.rankReportWrap___xjAui.chain.chain-report-wrap.war-report-wrap div.f-war-list.war-new div.desc-wrap div.faction-war.membersWrap___NbYLx div.tab-menu-cont.cont-gray.bottom-round.tabMenuCont___v65Yc.your-faction.profile-mode.right div.members-cont.membersCont___USwcq.profileMode___Ypqwo', loadpaytable);
+(function loadpaytable() {
     
     'use strict';
     // Select the initial element using the provided CSS selector
