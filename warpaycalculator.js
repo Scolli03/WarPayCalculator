@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.9.10
+// @version      3.9.11
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
@@ -96,7 +96,7 @@ function loadpaytable() {
         // Create the table header
         const header = table.createTHead();
         const headerRow = header.insertRow();
-        const headers = ['Member Name', 'Attack Count', 'Payout','PPH'];
+        const headers = ['Member Name', 'Attack Count', 'Payout'];
         headers.forEach(text => {
             const cell = document.createElement('th');
             cell.textContent = text;
@@ -116,10 +116,6 @@ function loadpaytable() {
             // Calculate the payout and add it to the last cell
             const payoutCell = row.insertCell();
             payoutCell.textContent = '0.00'; // Initial value, will be updated by event listeners
-
-            // Calculate the PPH and add it to the last cell
-            const pphCell = row.insertCell();
-            pphCell.textContent = '0.00'; // Initial value, will be updated by event listeners
         });
 
         // Append the table to the container
@@ -140,6 +136,15 @@ function loadpaytable() {
 
         // Append the total paid label to the container
         container.appendChild(totalPaidLabel);
+
+        // Create a label for the pay per hit
+        const payPerHitLabel = document.createElement('label');
+        payPerHitLabel.textContent = 'Pay Per Hit: $0.00';
+        payPerHitLabel.style.display = 'block';
+        payPerHitLabel.style.textAlign = 'right'; // Align the label to the right
+
+        // Append the pay per hit label to the container
+        container.appendChild(payPerHitLabel);
 
         // Find the element with role="main"
         const mainElement = document.querySelector('[role="main"]');
@@ -223,16 +228,20 @@ label {
             factionCostsLabel.textContent = `Faction Costs: $${factionCosts.toFixed(2)}`;
 
             let totalPaidToMembers = 0;
-
+            let totalPPH = 0;
             tbody.querySelectorAll('tr').forEach((row, index) => {
                 const attackCount = extractedData[index].attackCount;
                 const payout = (attackCount / totalHits) * totalAmountForMembers;
                 const pph = payout / attackCount;
+                
+                if (totalPPH !== pph) {
+                    totalPPH = pph;
+                    payPerHitLabel.textContent = `Pay Per Hit: $${pph.toFixed(2)}`;
+                }
+
                 totalPaidToMembers += payout;
                 const payoutCell = row.cells[2];
                 payoutCell.textContent = payout.toFixed(2);
-                const pphCell = row.cells[3];
-                pphCell.textContent = pph.toFixed(2);
             });
 
             totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
