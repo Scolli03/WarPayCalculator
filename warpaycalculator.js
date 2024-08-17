@@ -9,7 +9,7 @@
 // @downloadURL  https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @grant        none
-// @run-at       document-idle
+// @run-at       document-end
 // ==/UserScript==
 (function() {
     
