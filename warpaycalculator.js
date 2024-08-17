@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.9.9
+// @version      3.9.10
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
@@ -96,7 +96,7 @@ function loadpaytable() {
         // Create the table header
         const header = table.createTHead();
         const headerRow = header.insertRow();
-        const headers = ['Member Name', 'Attack Count', 'Payout'];
+        const headers = ['Member Name', 'Attack Count', 'Payout','PPH'];
         headers.forEach(text => {
             const cell = document.createElement('th');
             cell.textContent = text;
@@ -116,6 +116,10 @@ function loadpaytable() {
             // Calculate the payout and add it to the last cell
             const payoutCell = row.insertCell();
             payoutCell.textContent = '0.00'; // Initial value, will be updated by event listeners
+
+            // Calculate the PPH and add it to the last cell
+            const pphCell = row.insertCell();
+            pphCell.textContent = '0.00'; // Initial value, will be updated by event listeners
         });
 
         // Append the table to the container
@@ -222,17 +226,13 @@ label {
 
             tbody.querySelectorAll('tr').forEach((row, index) => {
                 const attackCount = extractedData[index].attackCount;
-                let payout = ((attackCount / totalHits) * totalAmountForMembers).toFixed(2);
-                const payperhit = (payout / attackCount);
-
-                // Minimum payout is 1,000,000 per hit
-                if (payperhit < 2000000) {
-                    payout = attackCount * 2000000;
-                }
-
+                const payout = (attackCount / totalHits) * totalAmountForMembers;
+                const pph = payout / attackCount;
                 totalPaidToMembers += payout;
                 const payoutCell = row.cells[2];
-                payoutCell.textContent = payout;
+                payoutCell.textContent = payout.toFixed(2);
+                const pphCell = row.cells[3];
+                pphCell.textContent = pph.toFixed(2);
             });
 
             totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
