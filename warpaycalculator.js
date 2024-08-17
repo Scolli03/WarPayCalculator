@@ -1,142 +1,145 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.9.3
+// @version      3.9.4
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=torn.com
 // @downloadURL  https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
-// @grant        none
-// @run-at       document-end
+// @require      http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
+// @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
+// @grant        GM_addStyle
 // ==/UserScript==
 /* global $, waitForKeyElements */
 function loadpaytable() {
     'use strict';
-    // Select the initial element using the provided CSS selector
-    const yourFactionTable = document.querySelector('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root div div.rankReportWrap___xjAui.chain.chain-report-wrap.war-report-wrap div.f-war-list.war-new div.desc-wrap div.faction-war.membersWrap___NbYLx div.tab-menu-cont.cont-gray.bottom-round.tabMenuCont___v65Yc.your-faction.profile-mode.right div.members-cont.membersCont___USwcq.profileMode___Ypqwo');
 
-    // Find the unordered list within this element
-    const ulElement = yourFactionTable.querySelector('ul.members-list');
+    function processFactionTable() {
+        // Select the initial element using the provided CSS selector
+        const yourFactionTable = document.querySelector('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root div div.rankReportWrap___xjAui.chain.chain-report-wrap.war-report-wrap div.f-war-list.war-new div.desc-wrap div.faction-war.membersWrap___NbYLx div.tab-menu-cont.cont-gray.bottom-round.tabMenuCont___v65Yc.your-faction.profile-mode.right div.members-cont.membersCont___USwcq.profileMode___Ypqwo');
 
-    // Get all list items within the unordered list
-    const listItems = ulElement.querySelectorAll('li.your');
+        // Find the unordered list within this element
+        const ulElement = yourFactionTable.querySelector('ul.members-list');
 
-    // Initialize an array to store the extracted data
-    const extractedData = [];
+        // Get all list items within the unordered list
+        const listItems = ulElement.querySelectorAll('li.your');
 
-    // List of names to exclude
-    const excludedNames = ['BobbyCholo', 'FatChickBathWTR'];
+        // Initialize an array to store the extracted data
+        const extractedData = [];
 
-    // Loop through each list item
-    listItems.forEach(item => {
-        // Extract the Member name
-        const memberName = item.querySelector('.member .userInfoBox___LRjPl').textContent.trim();
+        // List of names to exclude
+        const excludedNames = ['BobbyCholo', 'FatChickBathWTR'];
 
-        // Extract the Attack count
-        const attackCount = parseInt(item.querySelector('.points').textContent.trim(), 10);
+        // Loop through each list item
+        listItems.forEach(item => {
+            // Extract the Member name
+            const memberName = item.querySelector('.member .userInfoBox___LRjPl').textContent.trim();
 
-        // Only add the member data if the attack count is greater than zero
-        if (attackCount > 0 && !excludedNames.includes(memberName)) {
-            // Store the extracted data in an object
-            const memberData = {
-                memberName,
-                attackCount
-            };
+            // Extract the Attack count
+            const attackCount = parseInt(item.querySelector('.points').textContent.trim(), 10);
 
-            // Add the object to the array
-            extractedData.push(memberData);
-        }
-    });
+            // Only add the member data if the attack count is greater than zero
+            if (attackCount > 0 && !excludedNames.includes(memberName)) {
+                // Store the extracted data in an object
+                const memberData = {
+                    memberName,
+                    attackCount
+                };
 
-    // Create a form element for the inputs
-    const form = document.createElement('form');
-    form.classList.add('input-form');
+                // Add the object to the array
+                extractedData.push(memberData);
+            }
+        });
 
-    // Create input field for Total Winnings
-    const totalWinningsInput = document.createElement('input');
-    totalWinningsInput.type = 'number';
-    totalWinningsInput.placeholder = 'Total Winnings';
-    totalWinningsInput.id = 'total-winnings';
+        // Create a form element for the inputs
+        const form = document.createElement('form');
+        form.classList.add('input-form');
 
-    // Append the input to the form
-    form.appendChild(totalWinningsInput);
+        // Create input field for Total Winnings
+        const totalWinningsInput = document.createElement('input');
+        totalWinningsInput.type = 'number';
+        totalWinningsInput.placeholder = 'Total Winnings';
+        totalWinningsInput.id = 'total-winnings';
 
-    // Create labels for Leadership Pay and Faction Costs
-    const leadershipPayLabel = document.createElement('label');
-    leadershipPayLabel.textContent = 'Leadership Pay: $0.00';
-    leadershipPayLabel.style.display = 'block';
+        // Append the input to the form
+        form.appendChild(totalWinningsInput);
 
-    const factionCostsLabel = document.createElement('label');
-    factionCostsLabel.textContent = 'Faction Costs: $0.00';
-    factionCostsLabel.style.display = 'block';
+        // Create labels for Leadership Pay and Faction Costs
+        const leadershipPayLabel = document.createElement('label');
+        leadershipPayLabel.textContent = 'Leadership Pay: $0.00';
+        leadershipPayLabel.style.display = 'block';
 
-    // Create a div container for the form, labels, and table
-    const container = document.createElement('div');
-    container.style.marginTop = '20px'; // Add space between the main element and the container
-    container.appendChild(form);
-    container.appendChild(leadershipPayLabel);
-    container.appendChild(factionCostsLabel);
+        const factionCostsLabel = document.createElement('label');
+        factionCostsLabel.textContent = 'Faction Costs: $0.00';
+        factionCostsLabel.style.display = 'block';
 
-    // Create a table element
-    const table = document.createElement('table');
-    table.border = '1';
-    table.classList.add('dark-theme-table');
+        // Create a div container for the form, labels, and table
+        const container = document.createElement('div');
+        container.style.marginTop = '20px'; // Add space between the main element and the container
+        container.appendChild(form);
+        container.appendChild(leadershipPayLabel);
+        container.appendChild(factionCostsLabel);
 
-    // Create the table header
-    const header = table.createTHead();
-    const headerRow = header.insertRow();
-    const headers = ['Member Name', 'Attack Count', 'Payout'];
-    headers.forEach(text => {
-        const cell = document.createElement('th');
-        cell.textContent = text;
-        headerRow.appendChild(cell);
-    });
+        // Create a table element
+        const table = document.createElement('table');
+        table.border = '1';
+        table.classList.add('dark-theme-table');
 
-    // Create the table body
-    const tbody = table.createTBody();
-    extractedData.forEach(data => {
-        const row = tbody.insertRow();
-        const memberNameCell = row.insertCell();
-        memberNameCell.textContent = data.memberName;
+        // Create the table header
+        const header = table.createTHead();
+        const headerRow = header.insertRow();
+        const headers = ['Member Name', 'Attack Count', 'Payout'];
+        headers.forEach(text => {
+            const cell = document.createElement('th');
+            cell.textContent = text;
+            headerRow.appendChild(cell);
+        });
 
-        const attackCountCell = row.insertCell();
-        attackCountCell.textContent = data.attackCount;
+        // Create the table body
+        const tbody = table.createTBody();
+        extractedData.forEach(data => {
+            const row = tbody.insertRow();
+            const memberNameCell = row.insertCell();
+            memberNameCell.textContent = data.memberName;
 
-        // Calculate the payout and add it to the last cell
-        const payoutCell = row.insertCell();
-        payoutCell.textContent = '0.00'; // Initial value, will be updated by event listeners
-    });
+            const attackCountCell = row.insertCell();
+            attackCountCell.textContent = data.attackCount;
 
-    // Append the table to the container
-    container.appendChild(table);
+            // Calculate the payout and add it to the last cell
+            const payoutCell = row.insertCell();
+            payoutCell.textContent = '0.00'; // Initial value, will be updated by event listeners
+        });
 
-    // Create a spacer div
-    const spacer = document.createElement('div');
-    spacer.style.height = '20px'; // Adjust the height as needed
+        // Append the table to the container
+        container.appendChild(table);
 
-    // Append the spacer to the container before the total paid label
-    container.appendChild(spacer);
+        // Create a spacer div
+        const spacer = document.createElement('div');
+        spacer.style.height = '20px'; // Adjust the height as needed
 
-    // Create a label for the total amount paid to members
-    const totalPaidLabel = document.createElement('label');
-    totalPaidLabel.textContent = 'Total Amount Paid to Members: $0.00';
-    totalPaidLabel.style.display = 'block';
-    totalPaidLabel.style.textAlign = 'right'; // Align the label to the right
+        // Append the spacer to the container before the total paid label
+        container.appendChild(spacer);
 
-    // Append the total paid label to the container
-    container.appendChild(totalPaidLabel);
+        // Create a label for the total amount paid to members
+        const totalPaidLabel = document.createElement('label');
+        totalPaidLabel.textContent = 'Total Amount Paid to Members: $0.00';
+        totalPaidLabel.style.display = 'block';
+        totalPaidLabel.style.textAlign = 'right'; // Align the label to the right
 
-    // Find the element with role="main"
-    const mainElement = document.querySelector('[role="main"]');
+        // Append the total paid label to the container
+        container.appendChild(totalPaidLabel);
 
-    // Append the container to the main element
-    mainElement.appendChild(container);
+        // Find the element with role="main"
+        const mainElement = document.querySelector('[role="main"]');
 
-    // Add dark theme styling
-    const style = document.createElement('style');
-    style.textContent = `
+        // Append the container to the main element
+        mainElement.appendChild(container);
+
+        // Add dark theme styling
+        const style = document.createElement('style');
+        style.textContent = `
 .dark-theme-table {
     width: 100%;
     border-collapse: collapse;
@@ -189,51 +192,67 @@ label {
     }
 }
 `;
-    document.head.appendChild(style);
+        document.head.appendChild(style);
 
-    // Function to update the payouts and labels
-    function updatePayouts() {
-        const totalWinnings = parseFloat(totalWinningsInput.value || 0);
-        const leadershipPay = totalWinnings * 0.30;
-        const factionCosts = totalWinnings * 0.20;
-        const totalAmountForMembers = totalWinnings * 0.50; // Assuming 50% for members
+        // Function to update the payouts and labels
+        function updatePayouts() {
+            const totalWinnings = parseFloat(totalWinningsInput.value || 0);
+            const leadershipPay = totalWinnings * 0.30;
+            const factionCosts = totalWinnings * 0.20;
+            const totalAmountForMembers = totalWinnings * 0.50; // Assuming 50% for members
 
-        // Calculate total hits excluding the attack counts of excluded members
-        const totalHits = extractedData.reduce((sum, data) => {
-            if (!excludedNames.includes(data.memberName)) {
-                return sum + data.attackCount;
-            }
-            return sum;
-        }, 0);
+            // Calculate total hits excluding the attack counts of excluded members
+            const totalHits = extractedData.reduce((sum, data) => {
+                if (!excludedNames.includes(data.memberName)) {
+                    return sum + data.attackCount;
+                }
+                return sum;
+            }, 0);
 
-        leadershipPayLabel.textContent = `Leadership Pay: $${leadershipPay.toFixed(2)}`;
-        factionCostsLabel.textContent = `Faction Costs: $${factionCosts.toFixed(2)}`;
+            leadershipPayLabel.textContent = `Leadership Pay: $${leadershipPay.toFixed(2)}`;
+            factionCostsLabel.textContent = `Faction Costs: $${factionCosts.toFixed(2)}`;
 
-        let totalPaidToMembers = 0;
+            let totalPaidToMembers = 0;
 
-        tbody.querySelectorAll('tr').forEach((row, index) => {
-            const attackCount = extractedData[index].attackCount;
-            const payout = (attackCount / totalHits) * totalAmountForMembers;
-            const payperhit = (payout / payout);
+            tbody.querySelectorAll('tr').forEach((row, index) => {
+                const attackCount = extractedData[index].attackCount;
+                const payout = (attackCount / totalHits) * totalAmountForMembers;
+                const payperhit = (payout / payout);
 
-            // Minimum payout is 1,000,000 per hit
-            if (payperhit < 2000000){
-                payout = attackCount * 2000000;
-            }
+                // Minimum payout is 1,000,000 per hit
+                if (payperhit < 2000000) {
+                    payout = attackCount * 2000000;
+                }
 
-            totalPaidToMembers += payout;
-            const payoutCell = row.cells[2];
-            payoutCell.textContent = payout.toFixed(2);
-        });
+                totalPaidToMembers += payout;
+                const payoutCell = row.cells[2];
+                payoutCell.textContent = payout.toFixed(2);
+            });
 
-        totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
+            totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
+        }
+
+        // Update the table whenever the "Total Winnings" input changes
+        totalWinningsInput.addEventListener('input', updatePayouts);
     }
 
-    // Update the table whenever the "Total Winnings" input changes
-    totalWinningsInput.addEventListener('input', updatePayouts);
+    // Create a MutationObserver instance
+    const observer = new MutationObserver((mutationsList, observer) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                processFactionTable();
+            }
+        }
+    });
+
+    // Start observing the target node for configured mutations
+    const targetNode = document.querySelector('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root');
+    if (targetNode) {
+        observer.observe(targetNode, { childList: true, subtree: true });
+    } else {
+        console.error("Target node for MutationObserver not found.");
+    }
+
 };
 
-window.addEventListener("load", function(event) {
-    console.log("All resources finished loading!");
-    loadpaytable();
-});
+loadpaytable();
