@@ -1,24 +1,22 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.9
+// @version      3.9.2
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=torn.com
 // @downloadURL  https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
-// @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
 // @grant        none
+// @run-at       document-end
 // ==/UserScript==
 /* global $, waitForKeyElements */
+(function() {
 
-window.addEventListener("load", function(event) {
-    console.log("All resources finished loading!");
-});
-
-(function loadpaytable() {
+    window.addEventListener("load", function(event) {
+        console.log("All resources finished loading!");
+    });
     
     'use strict';
     // Select the initial element using the provided CSS selector
@@ -221,6 +219,13 @@ label {
         tbody.querySelectorAll('tr').forEach((row, index) => {
             const attackCount = extractedData[index].attackCount;
             const payout = (attackCount / totalHits) * totalAmountForMembers;
+            const payperhit = (payout / payout);
+
+            // Minimum payout is 1,000,000 per hit
+            if (payperhit < 2000000){
+                payout = attackCount * 2000000;
+            }
+
             totalPaidToMembers += payout;
             const payoutCell = row.cells[2];
             payoutCell.textContent = payout.toFixed(2);
@@ -232,5 +237,3 @@ label {
     // Update the table whenever the "Total Winnings" input changes
     totalWinningsInput.addEventListener('input', updatePayouts);
 })();
-
-waitForKeyElements('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root div div.rankReportWrap___xjAui.chain.chain-report-wrap.war-report-wrap div.f-war-list.war-new div.desc-wrap div.faction-war.membersWrap___NbYLx div.tab-menu-cont.cont-gray.bottom-round.tabMenuCont___v65Yc.your-faction.profile-mode.right div.members-cont.membersCont___USwcq.profileMode___Ypqwo', loadpaytable);
