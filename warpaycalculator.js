@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.9.8
+// @version      3.9.9
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
@@ -222,7 +222,7 @@ label {
 
             tbody.querySelectorAll('tr').forEach((row, index) => {
                 const attackCount = extractedData[index].attackCount;
-                let payout = (attackCount / totalHits) * totalAmountForMembers;
+                let payout = ((attackCount / totalHits) * totalAmountForMembers).toFixed(2);
                 const payperhit = (payout / attackCount);
 
                 // Minimum payout is 1,000,000 per hit
@@ -232,7 +232,7 @@ label {
 
                 totalPaidToMembers += payout;
                 const payoutCell = row.cells[2];
-                payoutCell.textContent = payout.toFixed(2);
+                payoutCell.textContent = payout;
             });
 
             totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
