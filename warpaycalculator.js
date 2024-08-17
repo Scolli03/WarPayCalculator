@@ -252,7 +252,7 @@ label {
     });
 
     // Start observing the target node for configured mutations
-    const targetNode = document.querySelector('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root');
+    const targetNode = document.querySelector('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root div div.rankReportWrap___xjAui.chain.chain-report-wrap.war-report-wrap div.f-war-list.war-new div.desc-wrap div.faction-war.membersWrap___NbYLx div.tab-menu-cont.cont-gray.bottom-round.tabMenuCont___v65Yc.your-faction.profile-mode.right div.members-cont.membersCont___USwcq.profileMode___Ypqwo');
     if (targetNode) {
         observer.observe(targetNode, { childList: true, subtree: true });
     } else {
