@@ -8,6 +8,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=torn.com
 // @downloadURL  https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
+// @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
 // @grant        none
 // @run-at       document-end
 // ==/UserScript==
