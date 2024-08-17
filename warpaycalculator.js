@@ -3,9 +3,11 @@
 // @namespace    http://tampermonkey.net/
 // @version      2024-08-05
 // @description  try to take over the world!
-// @author       You
+// @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=torn.com
+// @downloadURL  https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
+// @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @grant        none
 // ==/UserScript==
 
