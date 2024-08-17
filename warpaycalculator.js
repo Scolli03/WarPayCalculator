@@ -10,7 +10,6 @@
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @grant        none
 // ==/UserScript==
-
 (function() {
     
     'use strict';
