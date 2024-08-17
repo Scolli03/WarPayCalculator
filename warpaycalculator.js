@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.9.4
+// @version      3.9.5
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
@@ -17,6 +17,12 @@ function loadpaytable() {
     'use strict';
 
     function processFactionTable() {
+
+        // Check if the table already exists
+        if (document.querySelector('.dark-theme-table')) {
+            return; // Exit the function if the table already exists
+        }
+
         // Select the initial element using the provided CSS selector
         const yourFactionTable = document.querySelector('html body#body.d.body.webp-support.r.regular.with-sidebar.dark-mode div.content.responsive-sidebar-container.logged-in div#mainContainer.container div.content-wrapper.summer div#react-root div div.rankReportWrap___xjAui.chain.chain-report-wrap.war-report-wrap div.f-war-list.war-new div.desc-wrap div.faction-war.membersWrap___NbYLx div.tab-menu-cont.cont-gray.bottom-round.tabMenuCont___v65Yc.your-faction.profile-mode.right div.members-cont.membersCont___USwcq.profileMode___Ypqwo');
 
