@@ -1,7 +1,7 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.10
+// @version      3.10.1
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
@@ -14,7 +14,31 @@
 // ==/UserScript==
 /* global $, waitForKeyElements */
 
+
+// Function to observe DOM changes
+function observeDOMChanges() {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length) {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1 && node.matches('tbody')) {
+                        loadpaytable();
+                        observer.disconnect(); // Stop observing once the table is found and processed
+                    }
+                });
+            }
+        });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+}
+
+// Call the observer function to start observing
+observeDOMChanges();
+
 waitForKeyElements('.your-faction', loadpaytable);
+
+
 
 function loadpaytable() {
 
