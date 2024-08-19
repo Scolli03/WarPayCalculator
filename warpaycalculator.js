@@ -17,7 +17,7 @@
     let winnor = document.querySelector('.t-blue').textContent;
 
     if (winnor !== 'Misfit Mafia') {
-        selector = 'enemy-faction';
+        selector = '.enemy-faction';
     }
 
     // Select the initial element using the provided CSS selector
