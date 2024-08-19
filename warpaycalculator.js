@@ -1,32 +1,27 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.10.5
+// @version      3.10.6
 // @description  try to take over the world!
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=torn.com
 // @downloadURL  https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
-// @require      http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
-// @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
-// @grant        GM_addStyle
 // ==/UserScript==
-/* global $, waitForKeyElements */
 
+(function() {
 
-if (window.innerWidth <= 600) {
-    waitForKeyElements('.active___a8SfR.your', loadpaytable);
-} else {
-    waitForKeyElements('.your-faction', loadpaytable);
-}
+    let selector = '.your-faction';
 
+    let winnor = document.querySelector('.t-blue').textContent;
 
-
-function loadpaytable() {
+    if (winnor !== 'Misfit Mafia') {
+        selector = 'enemy-faction';
+    }
 
     // Select the initial element using the provided CSS selector
-    const yourFactionTable = document.querySelector('.your-faction');
+    const yourFactionTable = document.querySelector(selector);
 
     // Find the unordered list within this element
     const ulElement = yourFactionTable.querySelector('ul.members-list');
@@ -257,49 +252,55 @@ label {
     document.head.appendChild(style);
 
     // function to adjust they way the total winnings is divided where it calculates either faction costs or leadership pay when either of the inputs are changed and the remaining amount is divided among the members
-    function adjustTotalWinnings() {
-        const totalWinnings = parseFloat(totalWinningsInput.value || 0);
-        const leadershipPayPercentage = parseFloat(leadershipPayInput.value || 0);
-        const factionCostsPercentage = parseFloat(factionCostsInput.value || 0);
+    class adjustTotalWinnings {
+        constructor(event) {
+            const totalWinnings = parseFloat(totalWinningsInput.value || 0);
+            const leadershipPayPercentage = parseFloat(leadershipPayInput.value || 0);
+            const factionCostsPercentage = parseFloat(factionCostsInput.value || 0);
 
-        if (leadershipPayPercentage + factionCostsPercentage > 100) {
-            alert('The sum of Leadership Pay and Faction Costs percentages cannot exceed 100%');
-            return;
+            if (leadershipPayPercentage + factionCostsPercentage > 100) {
+                alert('The sum of Leadership Pay and Faction Costs percentages cannot exceed 100%');
+                event.target.value = ''; // Clear the current value of the input
+                return;
+            }
+
+            const input = this;
+            input.value = ''; // Clear the current value of the input
+
+            const leadershipPay = totalWinnings * (leadershipPayPercentage / 100);
+            const factionCosts = totalWinnings * (factionCostsPercentage / 100);
+            const totalAmountForMembers = totalWinnings - leadershipPay - factionCosts;
+
+            //Calculate total hits excluding the attack counts of excluded members
+            const totalHits = extractedData.reduce((sum, data) => {
+                if (!excludedNames.includes(data.memberName)) {
+                    return sum + data.attackCount;
+                }
+                return sum;
+            }, 0);
+
+            leadershipPayLabel.textContent = `Leadership Pay: $${leadershipPay.toFixed(2)}`;
+            factionCostsLabel.textContent = `Faction Costs: $${factionCosts.toFixed(2)}`;
+
+            let totalPaidToMembers = 0;
+            let totalPPH = 0;
+            tbody.querySelectorAll('tr').forEach((row, index) => {
+                const attackCount = extractedData[index].attackCount;
+                const payout = (attackCount / totalHits) * totalAmountForMembers;
+                const pph = payout / attackCount;
+
+                if (totalPPH !== pph) {
+                    totalPPH = pph;
+                    payPerHitLabel.textContent = `Pay Per Hit: $${pph.toFixed(2)}`;
+                }
+
+                totalPaidToMembers += payout;
+                const payoutCell = row.cells[2];
+                payoutCell.textContent = payout.toFixed(2);
+            });
+
+            totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
         }
-
-        const leadershipPay = totalWinnings * (leadershipPayPercentage / 100);
-        const factionCosts = totalWinnings * (factionCostsPercentage / 100);
-        const totalAmountForMembers = totalWinnings - leadershipPay - factionCosts;
-
-        //Calculate total hits excluding the attack counts of excluded members
-        const totalHits = extractedData.reduce((sum, data) => {
-            if (!excludedNames.includes(data.memberName)) {
-                return sum + data.attackCount;
-            }
-            return sum;
-        }, 0);
-
-        leadershipPayLabel.textContent = `Leadership Pay: $${leadershipPay.toFixed(2)}`;
-        factionCostsLabel.textContent = `Faction Costs: $${factionCosts.toFixed(2)}`;
-
-        let totalPaidToMembers = 0;
-        let totalPPH = 0;
-        tbody.querySelectorAll('tr').forEach((row, index) => {
-            const attackCount = extractedData[index].attackCount;
-            const payout = (attackCount / totalHits) * totalAmountForMembers;
-            const pph = payout / attackCount;
-
-            if (totalPPH !== pph) {
-                totalPPH = pph;
-                payPerHitLabel.textContent = `Pay Per Hit: $${pph.toFixed(2)}`;
-            }
-
-            totalPaidToMembers += payout;
-            const payoutCell = row.cells[2];
-            payoutCell.textContent = payout.toFixed(2);
-        });
-
-        totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
     }
 
 
@@ -311,4 +312,4 @@ label {
 
     // Update the table whenever the "Faction Costs" input changes
     factionCostsInput.addEventListener('input', adjustTotalWinnings);
-};
+})();
