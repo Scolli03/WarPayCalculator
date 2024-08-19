@@ -254,20 +254,19 @@ label {
     document.head.appendChild(style);
 
     // function to adjust they way the total winnings is divided where it calculates either faction costs or leadership pay when either of the inputs are changed and the remaining amount is divided among the members
-    class adjustTotalWinnings {
-        constructor(event) {
+    function adjustTotalWinnings(event) {
+
             const totalWinnings = parseFloat(totalWinningsInput.value || 0);
             const leadershipPayPercentage = parseFloat(leadershipPayInput.value || 0);
             const factionCostsPercentage = parseFloat(factionCostsInput.value || 0);
 
             if (leadershipPayPercentage + factionCostsPercentage > 100) {
                 alert('The sum of Leadership Pay and Faction Costs percentages cannot exceed 100%');
-                event.target.value = ''; // Clear the current value of the input
+                event.target.value = '';
                 return;
             }
 
-            const input = this;
-            input.value = ''; // Clear the current value of the input
+            
 
             const leadershipPay = totalWinnings * (leadershipPayPercentage / 100);
             const factionCosts = totalWinnings * (factionCostsPercentage / 100);
@@ -302,8 +301,8 @@ label {
             });
 
             totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
+        
         }
-    }
 
 
     // Update the table when the form inputs change
