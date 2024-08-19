@@ -254,7 +254,7 @@ label {
     document.head.appendChild(style);
 
     // function to adjust they way the total winnings is divided where it calculates either faction costs or leadership pay when either of the inputs are changed and the remaining amount is divided among the members
-    function adjustTotalWinnings(event) {
+    function adjustTotalWinnings() {
 
             const totalWinnings = parseFloat(totalWinningsInput.value || 0);
             const leadershipPayPercentage = parseFloat(leadershipPayInput.value || 0);
@@ -262,7 +262,6 @@ label {
 
             if (leadershipPayPercentage + factionCostsPercentage > 100) {
                 alert('The sum of Leadership Pay and Faction Costs percentages cannot exceed 100%');
-                event.target.value = '';
                 return;
             }
 
