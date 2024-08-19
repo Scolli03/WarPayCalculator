@@ -13,11 +13,13 @@
 (function() {
 
     let selector = '.your-faction';
+    let list_item = 'li.your ';
 
     let winnor = document.querySelector('.t-blue').textContent;
 
     if (winnor !== 'Misfit Mafia') {
         selector = '.enemy-faction';
+        list_item = 'li.enemy ';
     }
 
     // Select the initial element using the provided CSS selector
@@ -27,7 +29,7 @@
     const ulElement = yourFactionTable.querySelector('ul.members-list');
 
     // Get all list items within the unordered list
-    const listItems = ulElement.querySelectorAll('li.your');
+    const listItems = ulElement.querySelectorAll(list_item);
 
     // Initialize an array to store the extracted data
     const extractedData = [];
