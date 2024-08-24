@@ -1,8 +1,8 @@
 // ==UserScript== 
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.10.11
-// @description  try to take over the world!
+// @version      3.10.12
+// @description  Calculate war payments for faction members based on attack counts and total winnings in Torn City. This script works on the Rank Report page of a faction war. It calculates the payout for each member based on their attack count and the total winnings, and also provides the leadership pay and faction costs based on the specified percentages. The script also provides the total amount paid to members and the pay per hit. The script is intended for educational purposes only and should not be used to exploit or manipulate the game mechanics. Use it responsibly and respect the rules of the game.
 // @author       Scolli03 [3150751]
 // @match        https://www.torn.com/war.php?step=rankreport&rankID=*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=torn.com
@@ -11,13 +11,24 @@
 // ==/UserScript==
 
 (function() {
+    console.log('War Payment Calculator loaded');
+    const api_key = "###PDA-APIKEY###";
+
+    let player_faction = "";
+
+    PDA_httpGet(`https://api.torn.com/faction/?selections=basic&key=$${api_key}`)
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data);
+        player_faction = data.faction.name;
+    });
 
     let selector = '.your-faction';
     let list_item = 'li.your ';
 
-    let winnor = document.querySelector('.t-blue').textContent;
+    let winner = document.querySelector('.t-blue').textContent;
 
-    if (winnor !== 'Misfit Mafia') {
+    if (winner !== player_faction) {
         selector = '.enemy-faction';
         list_item = 'li.enemy ';
     }
