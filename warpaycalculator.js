@@ -1,4 +1,4 @@
-// ==UserScript== 
+// ==UserScript==
 // @name         War Payment Calculator
 // @namespace    http://tampermonkey.net/
 // @version      3.10.11
@@ -8,9 +8,17 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=torn.com
 // @downloadURL  https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
 // @updateURL    https://raw.githubusercontent.com/Scolli03/WarPayCalculator/main/warpaycalculator.js
+// @require      http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js
+// @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
+// @grant        GM_addStyle
 // ==/UserScript==
+/* global $, waitForKeyElements */
 
-(function() {
+
+
+function loadpaytable() {
+
+
 
     let selector = '.your-faction';
     let list_item = 'li.your ';
@@ -107,7 +115,7 @@
     factionpercentageLabel.style.whiteSpace = 'nowrap';
     factionpercentageLabel.style.display = 'flex';
     factionpercentageLabel.style.alignItems = 'center';
-    
+
     // Append the label to the form
     form.appendChild(factionpercentageLabel);
 
@@ -265,7 +273,7 @@ label {
                 return;
             }
 
-            
+
 
             const leadershipPay = totalWinnings * (leadershipPayPercentage / 100);
             const factionCosts = totalWinnings * (factionCostsPercentage / 100);
@@ -300,7 +308,7 @@ label {
             });
 
             totalPaidLabel.textContent = `Total Amount Paid to Members: $${totalPaidToMembers.toFixed(2)}`;
-        
+
         }
 
 
@@ -312,4 +320,8 @@ label {
 
     // Update the table whenever the "Faction Costs" input changes
     factionCostsInput.addEventListener('input', adjustTotalWinnings);
-})();
+
+
+};
+
+waitForKeyElements('.your-faction',loadpaytable);
